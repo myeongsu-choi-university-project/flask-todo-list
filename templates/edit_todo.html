@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Edit Todo - Todo App{% endblock %}
+{% block content %}
+<form method="post" class="todo-form" action="{{ url_for('update_todo', todo_id=todo.id, page=page)}}">
+    <input type="text" name="title" class="todo-input" value="{{ todo.title }}" required>
+    <textarea name="description" class="todo-description" required>{{ todo.description }}</textarea>
+    <button type="submit" class="todo-button">Update Todo</button>
+</form>
+<ul>
+    <button type="button" class="cancel-button" onclick="window.location.href='/'">
+        Cancel
+    </button>
+</ul>
+{% endblock %}

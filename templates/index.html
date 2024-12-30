@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Todo List - Todo App{% endblock %}
+{% block content %}
+<form method="post" class="todo-form" action="{{ url_for('add_todo') }}">
+    <input type="text" name="title" class="todo-input" placeholder="What needs to be done?" required>
+    <textarea name="description" class="todo-description" placeholder="Add a description (optional)"></textarea>
+    <button type="submit" class="todo-button">Add Todo</button>
+</form>
+<hr class="line">
+<form method="get" class="search-form">
+    <input type="text" name="search" class="search-input" placeholder="Search todos" value="{{ request.args.get('search', '') }}">
+    <button type="submit" class="search-button">Search</button>
+</form>
+
+<div class="todo-list">
+    {% if todos.items %}
+        <ul>
+        {% for todo in todos.items %}
+            <li>
+                <div class="todo-checkbox">
+                    <form method="post" action="{{ url_for('complete', todo_id = todo.id, page=todos.page) }}">
+                        <input type="checkbox" name="checkbox" {% if todo.completed %} checked {% endif %} onchange="this.form.submit()">
+                    </form>
+                </div>
+                <div class="todo-item {% if todo.completed %} completed {% endif %}">
+                    <strong>{{ todo.title }}</strong> <br>
+                    <span>{{ todo.description }}</span>
+                </div>
+
+                <div class="button-container">
+                    <a href="{{ url_for('edit_todo', todo_id = todo.id, page = todos.page) }}">
+                        <button class="edit-button">
+                            <!-- 출처 : <a href="https://www.flaticon.com/kr/free-icons/" title="편집하다 아이콘">편집하다 아이콘 제작자: Kiranshastry - Flaticon</a> -->
+                            <img src="{{ url_for('static', filename='images/edit.png') }}" alt="edit-png" class="edit-icon">
+                        </button>
+                    </a>
+                    <form method="post" action="{{ url_for('delete_todo', todo_id=todo.id, page=todos.page) }}">
+                        <button type="submit" class="delete-button" onclick="return confirm('Are you sure you want to delete this todo?');">
+                            <!-- 출처 : <a href="https://www.flaticon.com/kr/free-icons/" title="지우다 아이콘">지우다 아이콘 제작자: Aldo Cervantes - Flaticon</a> -->
+                            <img src="{{ url_for('static', filename='images/delete.png') }}" alt="delete-png" class="delete-icon">
+                        </button>
+                    </form>
+                </div>               
+            </li>
+        {% endfor %}
+        </ul>
+        <div class="pagination-container">
+            {% if todos.has_prev %}
+                <a href="{{ url_for('index', page=todos.prev_num )}}">
+                    <button type="button" class="pagination-button">Previous</button>
+                </a>
+            {% endif %}
+            <span>Page {{ todos.page }} of {{ todos.pages }}</span>
+            {% if todos.has_next %}
+                <a href="{{ url_for('index', page=todos.next_num )}}">
+                    <button type="button" class="pagination-button">Next</button>
+                </a>
+            {% endif %}
+        </div>
+        <ul>
+            {% if request.args.get('search') %}
+                <a href="{{ url_for('index') }}">
+                    <button type="button" class="back-button">Back to Home</button>
+                </a>
+            {% endif %}
+        </ul>
+    {% else %}
+    <ul>
+        <li>
+            <div class="todo-item">
+                <strong>No todos yet. Add some!</strong> <br>
+            </div>
+        </li>
+    </ul>
+    {% endif %}
+</div>    
+{% endblock %}
